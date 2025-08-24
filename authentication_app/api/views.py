@@ -9,13 +9,19 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
-
-from .serializers import RegistrationSerializer, LoginSerializer
-
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
+from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator as token_generator
+from django.conf import settings
+from django.utils.encoding import force_bytes, force_str
+from .serializers import (
+    RegistrationSerializer,
+    LoginSerializer,
+    PasswordResetConfirmSerializer,
+    PasswordResetRequestSerializer,
 )
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+User = get_user_model()
 
 
 class RegistrationView(APIView):
@@ -36,13 +42,14 @@ class RegistrationView(APIView):
 
         # E-Mail versenden (nutzt DEFAULT_FROM_EMAIL / SMTP aus deiner .env)
         send_mail(
-            subject="Aktiviere deinen Videoflix-Account",
+            subject="Activate your Videoflix account",
             message=(
-                "Hallo,\n\n"
-                f"bitte bestätige deine Registrierung:\n{activation_url}\n\n"
-                "Falls du dich nicht registriert hast, ignoriere diese E-Mail."
+                "Hi,\n\n"
+                "Please confirm your registration by clicking the link below:\n"
+                f"{activation_url}\n\n"
+                "If you didn’t sign up for Videoflix, you can safely ignore this email."
             ),
-            from_email=None,
+            from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
             recipient_list=[user.email],
             fail_silently=False,
         )
@@ -64,20 +71,33 @@ class ActivateView(APIView):
 
     def get(self, request, uidb64, token):
         try:
-            uid = urlsafe_base64_decode(uidb64).decode()
+            uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
-        except Exception:
-            return Response({"message": "Ungültiger Link."}, status=400)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            return Response(
+                {"detail": "Invalid activation link."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
+        # Idempotent: if already active, still return 200
         if user.is_active:
-            return Response({"message": "Account ist bereits aktiviert."}, status=200)
+            return Response(
+                {"detail": "Account is already activated."}, status=status.HTTP_200_OK
+            )
 
+        # Verify token and activate
         if default_token_generator.check_token(user, token):
             user.is_active = True
-            user.save()
-            return Response({"message": "Account erfolgreich aktiviert."}, status=200)
+            user.save(update_fields=["is_active"])
+            return Response(
+                {"detail": "Account activated successfully."}, status=status.HTTP_200_OK
+            )
 
-        return Response({"message": "Aktivierung fehlgeschlagen."}, status=400)
+        # Token invalid or expired
+        return Response(
+            {"detail": "Activation failed or token has expired."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 class LoginView(TokenObtainPairView):
@@ -178,3 +198,97 @@ class CookieTokenRefreshView(TokenRefreshView):
         )
 
         return response
+
+
+class PasswordResetRequestView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        ser = PasswordResetRequestSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+
+        email = ser.validated_data["email"]
+        User = get_user_model()
+
+        try:
+            user = User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "An email has been sent to reset your password."},
+                status=status.HTTP_200_OK,
+            )
+
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        token = token_generator.make_token(user)
+        path = reverse("password_confirm", kwargs={"uidb64": uidb64, "token": token})
+        reset_url = request.build_absolute_uri(path)
+
+        send_mail(
+            subject="Reset your Videoflix password",
+            message=(
+                "Hi,\n\n"
+                "We received a request to reset your password.\n"
+                f"Click the link below (valid for a limited time):\n{reset_url}\n\n"
+                "If you didn’t request this, you can safely ignore this email."
+            ),
+            from_email=getattr(settings, "DEFAULT_FROM_EMAIL", None),
+            recipient_list=[user.email],
+            fail_silently=True,  # in development you can set this to False
+        )
+
+        return Response(
+            {"detail": "An email has been sent to reset your password."},
+            status=status.HTTP_200_OK,
+        )
+
+
+class PasswordResetConfirmView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, uidb64, token):
+        # 1) user auflösen
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            return Response(
+                {"detail": "Invalid reset link."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 2) token prüfen
+        if not token_generator.check_token(user, token):
+            return Response(
+                {"detail": "Invalid or expired reset token."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # 3) jetzt validieren – mit user im Context
+        ser = PasswordResetConfirmSerializer(data=request.data, context={"user": user})
+        ser.is_valid(raise_exception=True)
+
+        # 4) Passwort setzen
+        user.set_password(ser.validated_data["new_password"])
+        user.save(update_fields=["password"])
+
+        # 5) (Optional) Invalidate all refresh tokens if blacklist is enabled
+        try:
+            from rest_framework_simplejwt.token_blacklist.models import (
+                OutstandingToken,
+                BlacklistedToken,
+            )
+
+            for t in OutstandingToken.objects.filter(user=user):
+                BlacklistedToken.objects.get_or_create(token=t)
+        except Exception:
+            # Blacklist not enabled or not migrated: ignore
+            pass
+
+        # 6) Return success + (optional) clear JWT cookies to force fresh login everywhere
+        resp = Response(
+            {"detail": "Password has been reset successfully."},
+            status=status.HTTP_200_OK,
+        )
+        # If you store JWTs in cookies, it’s sensible to clear them now:
+        resp.delete_cookie("access_token", path="/", samesite="Lax")
+        resp.delete_cookie("refresh_token", path="/", samesite="Lax")
+        return resp

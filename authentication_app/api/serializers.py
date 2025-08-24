@@ -70,3 +70,27 @@ class LoginSerializer(TokenObtainPairSerializer):
             "refresh": str(refresh),
             "access": str(refresh.access_token),
         }
+
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    new_password = serializers.CharField(
+        write_only=True, style={"input_type": "password"}
+    )
+    confirm_password = serializers.CharField(
+        write_only=True, style={"input_type": "password"}
+    )
+
+    def validate(self, attrs):
+        if attrs["new_password"] != attrs["confirm_password"]:
+            raise serializers.ValidationError(
+                {"confirm_password": "Passwords do not match."}
+            )
+
+        # Pass the user (from context) to Django's validators for best results
+        user = self.context.get("user")
+        validate_password(attrs["new_password"], user=user)
+        return attrs
