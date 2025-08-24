@@ -1,0 +1,22 @@
+cat > .gitignore << 'EOF'
+# Python/Django
+__pycache__/
+*.pyc
+.env
+*.sqlite3
+/staticfiles/
+/media/
+
+# venv & IDE
+.venv/
+env/
+.vscode/
+.idea/
+
+# Node/Angular (falls dabei)
+node_modules/
+dist/
+
+# Docker
+*.log
+EOF
