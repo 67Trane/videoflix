@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "import_export",
     "authentication_app",
-    "videos_app",
+    "videos_app.apps.VideosAppConfig",
     "rest_framework_simplejwt.token_blacklist",
 ]
 
