@@ -33,7 +33,7 @@ SECRET_KEY = os.getenv(
 
 # DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 DEBUG = True
-COOKIE_SECURE = not DEBUG 
+COOKIE_SECURE = not DEBUG
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost").split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get(

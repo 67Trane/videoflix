@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('videos_app', '0002_remove_video_thumbnail_url_video_video_file'),
+        ("videos_app", "0002_remove_video_thumbnail_url_video_video_file"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='video',
-            name='thumbnail_url',
-            field=models.ImageField(blank=True, null=True, upload_to='thumbnails/', verbose_name=''),
+            model_name="video",
+            name="thumbnail_url",
+            field=models.ImageField(
+                blank=True, null=True, upload_to="thumbnails/", verbose_name=""
+            ),
         ),
     ]

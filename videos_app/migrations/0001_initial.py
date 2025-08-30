@@ -4,22 +4,39 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Video',
+            name="Video",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Created at')),
-                ('title', models.CharField(max_length=200, verbose_name='Title')),
-                ('description', models.TextField(blank=True, verbose_name='Desciption')),
-                ('thumbnail_url', models.CharField(blank=True, max_length=500, verbose_name='Thumbnail URL')),
-                ('category', models.CharField(max_length=50, verbose_name='Category')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(auto_now_add=True, verbose_name="Created at"),
+                ),
+                ("title", models.CharField(max_length=200, verbose_name="Title")),
+                (
+                    "description",
+                    models.TextField(blank=True, verbose_name="Desciption"),
+                ),
+                (
+                    "thumbnail_url",
+                    models.CharField(
+                        blank=True, max_length=500, verbose_name="Thumbnail URL"
+                    ),
+                ),
+                ("category", models.CharField(max_length=50, verbose_name="Category")),
             ],
         ),
     ]

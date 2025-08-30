@@ -115,7 +115,11 @@ class LoginView(TokenObtainPairView):
         access = response.data.get("access")
 
         response.set_cookie(
-            key="access_token", value=access, httponly=True, secure=settings.COOKIE_SECURE, samesite="Lax"
+            key="access_token",
+            value=access,
+            httponly=True,
+            secure=settings.COOKIE_SECURE,
+            samesite="Lax",
         )
 
         response.set_cookie(

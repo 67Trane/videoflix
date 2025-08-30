@@ -36,7 +36,9 @@ class VideoMasterView(APIView):
         if not playlist_path.exists():
             raise Http404("master not found")
 
-        return FileResponse(open(playlist_path, "rb"), content_type="application/vnd.apple.mpegurl")
+        return FileResponse(
+            open(playlist_path, "rb"), content_type="application/vnd.apple.mpegurl"
+        )
 
 
 class VideoSegmentView(APIView):
