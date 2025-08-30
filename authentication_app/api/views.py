@@ -102,6 +102,7 @@ class ActivateView(APIView):
 
 class LoginView(TokenObtainPairView):
     serializer_class = LoginSerializer
+    permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -114,14 +115,14 @@ class LoginView(TokenObtainPairView):
         access = response.data.get("access")
 
         response.set_cookie(
-            key="access_token", value=access, httponly=True, secure=True, samesite="Lax"
+            key="access_token", value=access, httponly=True, secure=settings.COOKIE_SECURE, samesite="Lax"
         )
 
         response.set_cookie(
             key="refresh_token",
             value=refresh,
             httponly=True,
-            secure=True,
+            secure=settings.COOKIE_SECURE,
             samesite="Lax",
         )
 
@@ -193,7 +194,7 @@ class CookieTokenRefreshView(TokenRefreshView):
             key="access_token",
             value=access_token,
             httponly=True,
-            secure=True,
+            secure=settings.COOKIE_SECURE,
             samesite="Lax",
         )
 

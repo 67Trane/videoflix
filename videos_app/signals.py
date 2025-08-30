@@ -2,16 +2,19 @@ from .models import Video
 from django.dispatch import receiver
 from django.db.models.signals import post_save, post_delete
 import os
-from .tasks import convert_480p
+from .tasks import convert_to_hls, extract_thumbnail
 import django_rq
+from pathlib import Path
+from django.conf import settings
+
 
 @receiver(post_save, sender=Video)
 def video_post_save(sender, instance, created, **kwargs):
-    print('video wurde gespeichert')
+    thumb_tmp = Path(settings.MEDIA_ROOT) / "thumbnails" / f"{instance.id}_frame.jpg"
     if created:
-        print("new video created")
         queue = django_rq.get_queue('default', autocommit=True)
-        queue.enqueue(convert_480p, instance.video_file.path)
+        queue.enqueue(convert_to_hls, instance.video_file.path)
+        queue.enqueue(extract_thumbnail, instance.video_file.path, thumb_tmp, second = 2.0, max_width = 480)
 
 
 @receiver(post_delete, sender=Video)

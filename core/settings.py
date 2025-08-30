@@ -30,7 +30,10 @@ SECRET_KEY = os.getenv(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
+# DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 DEBUG = True
+COOKIE_SECURE = not DEBUG 
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", default="localhost").split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get(
@@ -43,7 +46,17 @@ INTERAL_IPS = [
 
 # Application definition
 
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:4200",
+    "http://localhost:4200",
+    "http://127.0.0.1:5500",
+    "http://localhost:5500",
+]
+
+CORS_ALLOW_CREDENTIALS = True  # wichtig, wenn Cookies/Sessions genutzt werden
+
 INSTALLED_APPS = [
+    "corsheaders",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

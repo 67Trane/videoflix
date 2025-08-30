@@ -7,4 +7,5 @@ class Video(models.Model):
     description = models.TextField(_("Desciption"), blank=True)
     video_file = models.FileField(_("Video File"),upload_to="videos/", blank=True, null=True)
     category = models.CharField(_("Category"), max_length=50)
+    thumbnail_url = models.ImageField(_(""), upload_to="thumbnails/", height_field=None, width_field=None, max_length=None, blank=True, null=True)
     
