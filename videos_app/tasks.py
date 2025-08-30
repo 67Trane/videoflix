@@ -9,26 +9,31 @@ ALLOWED_RESOLUTIONS = {"480p", "720p", "1080p"}
 
 def convert_to_hls(source: str) -> str:
     src = Path(source)
-    out_dir = src.parent / f"{src.stem}_hls_480p"
-    out_dir.mkdir(parents=True, exist_ok=True)
+    RENDITIONS = {
+        "480p":  {"height": 480,  "v_bitrate": "1200k", "a_bitrate": "128k"},
+        "720p":  {"height": 720,  "v_bitrate": "2800k", "a_bitrate": "128k"},
+        "1080p": {"height": 1080, "v_bitrate": "5000k", "a_bitrate": "192k"},
+    }
 
-    playlist = out_dir / "index.m3u8"
-    segments = out_dir / "seg_%03d.ts"
-
-    cmd = [
-        "ffmpeg", "-y",
-        "-i", str(src),
-        "-vf", "scale=-2:480",
-        "-c:v", "libx264", "-crf", "23", "-preset", "veryfast",
-        "-c:a", "aac", "-b:a", "128k",
-        "-hls_time", "6",
-        "-hls_playlist_type", "vod",
-        "-hls_flags", "independent_segments",
-        "-hls_segment_filename", str(segments),
-        str(playlist),
-    ]
-
-    subprocess.run(cmd, check=True)
+    for res, cfg in RENDITIONS.items():
+        out_dir = src.parent / f"{src.stem}_hls_{res}"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        playlist = out_dir / "index.m3u8"
+        segments = out_dir / "seg_%03d.ts"
+        cmd = [
+            "ffmpeg", "-y",
+            "-i", str(src),
+            "-vf", f"scale=-2:{cfg['height']}",
+            "-c:v", "libx264", "-crf", "23", "-preset", "veryfast",
+            "-c:a", "aac", "-b:a", cfg["a_bitrate"],
+            "-hls_time", "6",
+            "-hls_playlist_type", "vod",
+            "-hls_flags", "independent_segments",
+            "-hls_segment_filename", str(segments),
+            str(playlist),
+        ]
+        subprocess.run(cmd, check=True)
+    
     return str(playlist)
 
 
