@@ -19,7 +19,7 @@ def convert_to_hls(source: str) -> str:
         out_dir = src.parent / f"{src.stem}_hls_{res}"
         out_dir.mkdir(parents=True, exist_ok=True)
         playlist = out_dir / "index.m3u8"
-        segments = out_dir / "seg_%03d.ts"
+        segments = out_dir / "%03d.ts"
         cmd = [
             "ffmpeg", "-y",
             "-i", str(src),
