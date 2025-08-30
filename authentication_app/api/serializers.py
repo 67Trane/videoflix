@@ -7,19 +7,19 @@ from rest_framework.exceptions import AuthenticationFailed
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
-    repeated_password = serializers.CharField(write_only=True)
+    confirmed_password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ["email", "password", "repeated_password"]
+        fields = ["email", "password", "confirmed_password"]
         extra_kwargs = {"password": {"write_only": True}, "email": {"required": True}}
 
     def validate(self, attrs):
         password = attrs.get("password")
-        repeated_password = attrs.pop("repeated_password", None)
-        if password != repeated_password:
+        confirmed_password = attrs.pop("confirmed_password", None)
+        if password != confirmed_password:
             raise serializers.ValidationError(
-                {"repeated_password": "Passwords do not match"}
+                {"confirmed_password": "Passwords do not match"}
             )
         validate_password(password)
         return attrs
