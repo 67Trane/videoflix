@@ -10,11 +10,12 @@ from django.conf import settings
 
 @receiver(post_save, sender=Video)
 def video_post_save(sender, instance, created, **kwargs):
-    thumb_tmp = Path(settings.MEDIA_ROOT) / "thumbnails" / f"{instance.id}_frame.jpg"
+    thumb_rel = f"thumbnails/{instance.pk}.jpg"
+    # thumb_tmp = Path(settings.MEDIA_ROOT) / "thumbnails" / f"{instance.pk}_frame.jpg"
     if created:
         queue = django_rq.get_queue('default', autocommit=True)
         queue.enqueue(convert_to_hls, instance.video_file.path)
-        queue.enqueue(extract_thumbnail, instance.video_file.path, thumb_tmp, second = 2.0, max_width = 480)
+        queue.enqueue(extract_thumbnail, instance.pk, str(instance.video_file.path), thumb_rel, second = 2.0, max_width = 480)
 
 
 @receiver(post_delete, sender=Video)

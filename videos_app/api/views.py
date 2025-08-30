@@ -31,9 +31,7 @@ class VideoMasterView(APIView):
             hls_dir = get_hls_dir(video, resolution)
         except ValueError:
             raise Http404("resolution not aviable")
-        print("hls pfad ist", hls_dir)
         playlist_path = hls_dir / "index.m3u8"
-        print("master pfad ist", playlist_path)
 
         if not playlist_path.exists():
             raise Http404("master not found")
