@@ -43,4 +43,21 @@ class VideoMasterView(APIView):
 
 class VideoSegmentView(APIView):
     permission_classes = [AllowAny]
-    
+
+    def get(self, request, movie_id: int, resolution: str, segment: str):
+        if "/" in segment or "\\" in segment:
+            raise Http404("invalid segment")
+
+        video = get_object_or_404(Video, pk=movie_id)
+
+        try:
+            hls_dir = get_hls_dir(video, resolution)
+        except ValueError:
+            raise Http404("resolution not aviable")
+
+        segment_path = hls_dir / segment
+
+        if not segment_path.exists():
+            raise Http404("segment not found")
+
+        return FileResponse(open(segment_path, "rb"), content_type="video/MP2T")
