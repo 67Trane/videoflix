@@ -44,8 +44,7 @@ def send_activation_email(user, request):
 def send_password_reset_email(user, request):
     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
-    path = reverse("password_confirm", kwargs={
-                   "uidb64": uidb64, "token": token})
+    path = reverse("password_confirm", kwargs={"uidb64": uidb64, "token": token})
     reset_url = absolute_url(request, path)
 
     subject = "Reset your VideoFlix password"

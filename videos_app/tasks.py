@@ -37,17 +37,28 @@ def convert_to_hls(source: str) -> str:
         cmd = [
             "ffmpeg",
             "-y",
-            "-i", str(src),
-            "-vf", f"scale=-2:{cfg['height']}",
-            "-c:v", "libx264",
-            "-crf", "23",
-            "-preset", "veryfast",
-            "-c:a", "aac",
-            "-b:a", cfg["a_bitrate"],
-            "-hls_time", "6",
-            "-hls_playlist_type", "vod",
-            "-hls_flags", "independent_segments",
-            "-hls_segment_filename", str(segments),
+            "-i",
+            str(src),
+            "-vf",
+            f"scale=-2:{cfg['height']}",
+            "-c:v",
+            "libx264",
+            "-crf",
+            "23",
+            "-preset",
+            "veryfast",
+            "-c:a",
+            "aac",
+            "-b:a",
+            cfg["a_bitrate"],
+            "-hls_time",
+            "6",
+            "-hls_playlist_type",
+            "vod",
+            "-hls_flags",
+            "independent_segments",
+            "-hls_segment_filename",
+            str(segments),
             str(playlist),
         ]
         subprocess.run(cmd, check=True)
@@ -87,11 +98,16 @@ def extract_thumbnail(
     cmd = [
         "ffmpeg",
         "-y",
-        "-ss", str(second),  # seek position before input (faster)
-        "-i", str(src_path),
-        "-frames:v", "1",  # extract exactly one frame
-        "-vf", f"scale='min({max_width},iw)':-2:force_original_aspect_ratio=decrease",
-        "-q:v", "2",  # JPEG quality (2 = high, 31 = worst)
+        "-ss",
+        str(second),  # seek position before input (faster)
+        "-i",
+        str(src_path),
+        "-frames:v",
+        "1",  # extract exactly one frame
+        "-vf",
+        f"scale='min({max_width},iw)':-2:force_original_aspect_ratio=decrease",
+        "-q:v",
+        "2",  # JPEG quality (2 = high, 31 = worst)
         str(thumb_abs),
     ]
 

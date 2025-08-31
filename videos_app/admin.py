@@ -10,6 +10,7 @@ class Video(admin.ModelAdmin):
     - Allows searching by title, description, and category.
     - Provides filters for category and creation date.
     """
+
     list_display = ("id", "title", "category", "created_at")
     search_fields = ("title", "description", "category")
     list_filter = ("category", "created_at")

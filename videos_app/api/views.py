@@ -15,6 +15,7 @@ class VideoListView(ListAPIView):
     - Accessible only to authenticated users.
     - Uses JWT for authentication.
     """
+
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
     authentication_classes = [JWTAuthentication]
@@ -31,6 +32,7 @@ class VideoMasterView(APIView):
     Raises:
         Http404: If the resolution is invalid or the playlist file does not exist.
     """
+
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
@@ -47,8 +49,7 @@ class VideoMasterView(APIView):
             raise Http404("master not found")
 
         return FileResponse(
-            open(playlist_path, "rb"),
-            content_type="application/vnd.apple.mpegurl"
+            open(playlist_path, "rb"), content_type="application/vnd.apple.mpegurl"
         )
 
 
@@ -63,6 +64,7 @@ class VideoSegmentView(APIView):
     Raises:
         Http404: If the segment name is invalid or the file does not exist.
     """
+
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
