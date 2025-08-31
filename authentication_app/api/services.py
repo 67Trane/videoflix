@@ -7,10 +7,32 @@ from django.contrib.auth.tokens import default_token_generator
 
 
 def absolute_url(request, path: str) -> str:
+    """Build an absolute URL from a relative path.
+
+    Args:
+        request (Request): DRF/Django request object (used to build domain + scheme).
+        path (str): Relative URL path.
+
+    Returns:
+        str: Absolute URL including domain and scheme.
+    """
     return request.build_absolute_uri(path)
 
 
 def send_activation_email(user, request):
+    """Send an account activation email to a user.
+
+    - Generates a unique activation token tied to the user.
+    - Builds an activation URL containing the token and user ID.
+    - Sends a multi-part email (plain text + HTML) with the link.
+
+    Args:
+        user (User): The user instance to send the activation link to.
+        request (Request): DRF/Django request object used for absolute URL generation.
+
+    Returns:
+        str: The generated activation token (useful for testing/debugging).
+    """
     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
     path = reverse("activate", kwargs={"uidb64": uidb64, "token": token})
@@ -38,16 +60,32 @@ def send_activation_email(user, request):
     )
     msg.attach_alternative(html, "text/html")
     msg.send(fail_silently=False)
+
     return token
 
 
 def send_password_reset_email(user, request):
+    """Send a password reset email to a user.
+
+    - Generates a password reset token tied to the user.
+    - Builds a reset URL containing the token and user ID.
+    - Sends a multi-part email (plain text + HTML) with the link.
+    - The link is valid only for a limited time (token expiration).
+
+    Args:
+        user (User): The user instance requesting the reset.
+        request (Request): DRF/Django request object used for absolute URL generation.
+
+    Returns:
+        None
+    """
     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
-    path = reverse("password_confirm", kwargs={"uidb64": uidb64, "token": token})
+    path = reverse("password_confirm", kwargs={
+                   "uidb64": uidb64, "token": token})
     reset_url = absolute_url(request, path)
 
-    subject = "Reset your VideoFlix password"
+    subject = "Reset your Videoflix password"
     text = (
         "Hi,\n\n"
         "We received a request to reset your password.\n"
@@ -61,6 +99,7 @@ def send_password_reset_email(user, request):
          <a href="{reset_url}">{reset_url}</a></p>
       <p>If you didn’t request this, you can safely ignore this email.</p>
     """
+
     msg = EmailMultiAlternatives(
         subject=subject,
         body=text,
