@@ -10,11 +10,28 @@ from django.conf import settings
 
 @receiver(post_save, sender=Video)
 def video_post_save(sender, instance, created, **kwargs):
+    """Signal handler that runs after a Video instance is saved.
+
+    - On creation of a new Video:
+      * Enqueues a background job to convert the uploaded file into HLS format.
+      * Enqueues a background job to generate a thumbnail image.
+
+    Args:
+        sender (Model): The model class (Video).
+        instance (Video): The actual saved Video instance.
+        created (bool): True if a new object was created, False if updated.
+        **kwargs: Additional arguments passed by the signal.
+    """
     thumb_rel = f"thumbnails/{instance.pk}.jpg"
-    # thumb_tmp = Path(settings.MEDIA_ROOT) / "thumbnails" / f"{instance.pk}_frame.jpg"
+
     if created:
+        # Use RQ (Redis Queue) to process tasks asynchronously in the background.
         queue = django_rq.get_queue("default", autocommit=True)
+
+        # Enqueue HLS video conversion
         queue.enqueue(convert_to_hls, instance.video_file.path)
+
+        # Enqueue thumbnail extraction
         queue.enqueue(
             extract_thumbnail,
             instance.pk,
@@ -27,6 +44,14 @@ def video_post_save(sender, instance, created, **kwargs):
 
 @receiver(post_delete, sender=Video)
 def auto_delete_file_on_delete(sender, instance, **kwargs):
+    """Signal handler that deletes the associated video file
+    from the filesystem when a Video instance is removed.
+
+    Args:
+        sender (Model): The model class (Video).
+        instance (Video): The deleted Video instance.
+        **kwargs: Additional arguments passed by the signal.
+    """
     if instance.video_file:
         if os.path.isfile(instance.video_file.path):
             os.remove(instance.video_file.path)
