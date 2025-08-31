@@ -16,13 +16,14 @@ from ..tasks import get_hls_dir
 class VideoListView(ListAPIView):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
-    permission_classes = [AllowAny]
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     http_method_names = ["get"]
 
 
 class VideoMasterView(APIView):
-    # authentication_classes = [JWTAuthentication]
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
 
     def get(self, request, movie_id: int, resolution: str):
         video = get_object_or_404(Video, pk=movie_id)
@@ -42,7 +43,8 @@ class VideoMasterView(APIView):
 
 
 class VideoSegmentView(APIView):
-    permission_classes = [AllowAny]
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, movie_id: int, resolution: str, segment: str):
         if "/" in segment or "\\" in segment:

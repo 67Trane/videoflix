@@ -148,7 +148,7 @@ class LogoutAndBlacklistView(APIView):
 
         if not refresh_cookie:
             return Response(
-                {"detail": "Refresh-Token fehlt."},
+                {"detail": "Refresh-Token missing"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -156,7 +156,7 @@ class LogoutAndBlacklistView(APIView):
             RefreshToken(refresh_cookie).blacklist()
         except TokenError:
             return Response(
-                {"detail": "Refresh-Token ungültig."},
+                {"detail": "Refresh-Token expired."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         resp = Response(
