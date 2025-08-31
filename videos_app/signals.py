@@ -44,14 +44,21 @@ def video_post_save(sender, instance, created, **kwargs):
 
 @receiver(post_delete, sender=Video)
 def auto_delete_file_on_delete(sender, instance, **kwargs):
-    """Signal handler that deletes the associated video file
-    from the filesystem when a Video instance is removed.
+    """Signal handler that deletes associated media files
+    when a Video instance is removed.
+
+    - Deletes the original video file.
+    - Deletes the thumbnail image (if it exists).
 
     Args:
         sender (Model): The model class (Video).
         instance (Video): The deleted Video instance.
         **kwargs: Additional arguments passed by the signal.
     """
-    if instance.video_file:
-        if os.path.isfile(instance.video_file.path):
-            os.remove(instance.video_file.path)
+    # Delete video file if it exists
+    if instance.video_file and os.path.isfile(instance.video_file.path):
+        os.remove(instance.video_file.path)
+
+    # Delete thumbnail file if it exists
+    if instance.thumbnail_url and os.path.isfile(instance.thumbnail_url.path):
+        os.remove(instance.thumbnail_url.path)
