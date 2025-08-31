@@ -10,6 +10,7 @@ class CustomUserAdmin(UserAdmin):
     - Provides filters for activation status and staff status.
     - Extends Django’s default UserAdmin.
     """
+
     list_display = ("username", "email", "is_active", "is_staff", "date_joined")
     list_filter = ("is_active", "is_staff")
 
