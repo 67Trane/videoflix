@@ -75,3 +75,39 @@ def test_registration():
     assert "user" in resp.data and "token" in resp.data
     assert resp.data["user"]["email"] == email
     assert User.objects.filter(email=email).exists()
+
+@pytest.mark.django_db
+def test_logout():
+    client = APIClient()
+    
+    email = "test@test.com"
+    password = "testpassword"
+    User.objects.create_user(username=email, email=email, password=password, is_active=True)
+    login_url = reverse("login")
+    login_resp = client.post(login_url, {"email": email, "password": password, "confirmed_password": password}, format="json")
+    assert login_resp.status_code == 200, login_resp.data
+    assert "refresh_token" in login_resp.cookies
+    assert "access_token" in login_resp.cookies
+    
+    
+    logout_url = reverse("logout")
+    out= client.post(logout_url)
+    assert out.status_code == 200, getattr(out, "data", out)
+    
+    
+@pytest.mark.django_db
+def test_logout_missing_cookie_returns_400():
+    client = APIClient()
+    resp = client.post(reverse("logout"))
+    assert resp.status_code == 400
+    assert "detail" in resp.data
+    assert "Refresh-Token" in resp.data["detail"]
+
+
+@pytest.mark.django_db
+def test_logout_with_invalid_refresh_returns_400():
+    client = APIClient()
+    client.cookies["refresh_token"] = "bogus.invalid.refresh"
+    resp = client.post(reverse("logout"))
+    assert resp.status_code == 400
+    assert "detail" in resp.data
