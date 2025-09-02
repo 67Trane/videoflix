@@ -96,11 +96,15 @@ def test_logout():
 
     email = "test@test.com"
     password = "testpassword"
-    User.objects.create_user(username=email, email=email, password=password, is_active=True)
+    User.objects.create_user(
+        username=email, email=email, password=password, is_active=True
+    )
 
     login_url = reverse("login")
     login_resp = client.post(
-        login_url, {"email": email, "password": password, "confirmed_password": password}, format="json"
+        login_url,
+        {"email": email, "password": password, "confirmed_password": password},
+        format="json",
     )
     assert login_resp.status_code == 200, login_resp.data
     assert "refresh_token" in login_resp.cookies
@@ -148,7 +152,9 @@ def test_refresh_with_valid_cookie():
 
     email = "test@test.com"
     password = "testpassword"
-    User.objects.create_user(username=email, email=email, password=password, is_active=True)
+    User.objects.create_user(
+        username=email, email=email, password=password, is_active=True
+    )
 
     login_resp = client.post(
         reverse("login"), {"email": email, "password": password}, format="json"

@@ -39,8 +39,9 @@ def test_get_all_videos():
 def test_get_hls_dir(tmp_path, settings):
     """get_hls_dir returns the correct directory for a given resolution."""
     settings.MEDIA_ROOT = tmp_path
-    video = SimpleNamespace(video_file=SimpleNamespace(
-        path=str(tmp_path / "videos" / "clip.mp4")))
+    video = SimpleNamespace(
+        video_file=SimpleNamespace(path=str(tmp_path / "videos" / "clip.mp4"))
+    )
     p = get_hls_dir(video, "720p")
     assert p == Path(tmp_path) / "videos" / "clip_hls_720p"
 
