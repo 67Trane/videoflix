@@ -38,10 +38,10 @@ git clone <repo-url>
 cd videoflix
 ```
 
-2) `.env` konfigurieren:
+2) Configure `.env`:
 ```bash
 cp .env.template .env
-# Werte wie DB, Redis, E-Mail eintragen
+# Fill in values for DB, Redis, Email, etc.
 ```
 
 3) Starten:
@@ -55,16 +55,16 @@ docker-compose up --build
 
 ## 🔑 Important Environment Variables (`.env`)
 
-| Variable               | Beschreibung              | Beispiel                  |
+| Variable               | Description              | Example                  |
 |------------------------|---------------------------|---------------------------|
-| `SECRET_KEY`           | Django Secret Key         | `change-me-very-secret`   |
+| `SECRET_KEY`           | Django secret key         | `change-me-very-secret`   |
 | `DEBUG`                | True/False                | `True`                    |
-| `ALLOWED_HOSTS`        | Erlaubte Hosts            | `localhost,127.0.0.1`     |
-| `CSRF_TRUSTED_ORIGINS` | CSRF-Whitelist            | `http://localhost:4200`   |
-| `DB_*`                 | DB-Zugangsdaten           | `videoflix / ********`    |
+| `ALLOWED_HOSTS`        | Allowed hosts            | `localhost,127.0.0.1`     |
+| `CSRF_TRUSTED_ORIGINS` | CSRF whitelist            | `http://localhost:4200`   |
+| `DB_*`                 | Database credentials           | `videoflix / ********`    |
 | `REDIS_HOST`           | Redis Host                | `redis`                   |
-| `EMAIL_*`              | SMTP Einstellungen        | `smtp.example.com`        |
-| `DJANGO_SUPERUSER_*`   | Auto-Superuser beim Start | `admin / admin@example.com` |
+| `EMAIL_*`              | SMTP settings        | `smtp.example.com`        |
+| `DJANGO_SUPERUSER_*`   | Auto superuser at startup | `admin / admin@example.com` |
 
 ---
 
