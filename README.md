@@ -1,20 +1,20 @@
-# 🎬 Videoflix – Streaming-Plattform
+# 🎬 Videoflix – Streaming Platform
 
-Videoflix ist eine Streaming-Webapp mit einem Django-Backend und einem einfachen Frontend auf Basis von JavaScript, HTML und CSS.  
-Im Zentrum stehen die Authentifizierung via JWT und die Auslieferung von Videos im **HLS-Format** in mehreren Auflösungen.
+Videoflix is a streaming web app with a Django backend and a simple frontend built with JavaScript, HTML, and CSS.  
+Core features include authentication via JWT and video delivery in **HLS format** with multiple resolutions.
 
 ---
 
-## 🚀 Haupt-Features
+## 🚀 Main Features
 
-- **JWT-Authentifizierung**: Login & Session-Handling über JSON Web Tokens  
-- **Videostreaming im HLS-Format** (`.m3u8`)  
-- **Drei auswählbare Auflösungen**:  
+- **JWT Authentication**: Login & session handling with JSON Web Tokens  
+- **Video streaming in HLS format** (`.m3u8`)  
+- **Three selectable resolutions**:  
   - 480p (SD)  
   - 720p (HD)  
   - 1080p (Full HD)  
-- **E-Mail-gestützte Registrierung** mit Aktivierungslink  
-- **Automatische Hintergrundprozesse** (ffmpeg-Transcoding, Thumbnail-Erstellung) über Redis & RQ  
+- **Email-based registration** with activation link  
+- **Automatic background tasks** (ffmpeg transcoding, thumbnail creation) via Redis & RQ  
 
 ---
 
@@ -53,7 +53,7 @@ docker-compose up --build
 
 ---
 
-## 🔑 Wichtige Umgebungsvariablen (`.env`)
+## 🔑 Important Environment Variables (`.env`)
 
 | Variable               | Beschreibung              | Beispiel                  |
 |------------------------|---------------------------|---------------------------|
@@ -68,7 +68,7 @@ docker-compose up --build
 
 ---
 
-## 🛠️ Nützliche Befehle
+## 🛠️ Useful Commands
 
 Container öffnen:
 ```bash
@@ -92,10 +92,41 @@ docker-compose logs -f backend
 
 ---
 
-## 🔒 Sicherheit
 
-- In Produktion `DEBUG=False`  
-- Sichere Passwörter & Secrets verwenden  
-- `ALLOWED_HOSTS` und `CSRF_TRUSTED_ORIGINS` korrekt pflegen  
-- HTTPS über Nginx/Proxy terminieren  
-- Persistent Volumes für `media/` und `static/`  
+---
+
+## ✅ Tests
+
+The backend comes with **pytest tests**.  
+They cover authentication, video endpoints, and background tasks.
+
+### Run tests locally
+
+Open a container:
+```bash
+docker-compose exec backend sh
+```
+
+Run all tests:
+```bash
+pytest
+```
+
+With detailed output:
+```bash
+pytest -v
+```
+
+With coverage report:
+```bash
+pytest --cov
+```
+
+
+## 🔒 Security
+
+- In production set `DEBUG=False`  
+- Use strong passwords & secrets  
+- Configure `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS` correctly  
+- Use HTTPS termination via Nginx/Proxy  
+- Persistent volumes for `media/` and `static/`  
