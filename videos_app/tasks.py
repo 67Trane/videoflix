@@ -105,7 +105,7 @@ def extract_thumbnail(
         "-frames:v",
         "1",  # extract exactly one frame
         "-vf",
-        f"scale='min({max_width},iw)':-2:force_original_aspect_ratio=decrease",
+        f"scale=min({max_width},iw):-2:force_original_aspect_ratio=decrease",
         "-q:v",
         "2",  # JPEG quality (2 = high, 31 = worst)
         str(thumb_abs),
@@ -143,6 +143,7 @@ def get_hls_dir(video: Video, resolution: str) -> Path:
     ]
 
     hls_dir = (
-        Path(settings.MEDIA_ROOT) / "videos" / f"{source_absolute_path.stem}{suffix}"
+        Path(settings.MEDIA_ROOT) / "videos" /
+        f"{source_absolute_path.stem}{suffix}"
     )
     return hls_dir
