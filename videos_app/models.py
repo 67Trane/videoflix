@@ -25,8 +25,6 @@ class Video(models.Model):
     video_file = models.FileField(
         _("Video File"),
         upload_to="videos/",
-        blank=True,
-        null=True,
         help_text="Uploaded video file stored in the 'videos/' directory.",
     )
     category = models.CharField(

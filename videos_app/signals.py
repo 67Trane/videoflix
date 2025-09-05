@@ -31,15 +31,17 @@ def video_post_save(sender, instance, created, **kwargs):
         # Enqueue HLS video conversion
         queue.enqueue(convert_to_hls, instance.video_file.path)
 
-        # Enqueue thumbnail extraction
-        queue.enqueue(
-            extract_thumbnail,
-            instance.pk,
-            str(instance.video_file.path),
-            thumb_rel,
-            second=2.0,
-            max_width=480,
-        )
+        # Only extract a thumbnail if the user did not upload one
+        if not instance.thumbnail_url:
+            # Enqueue thumbnail extraction
+            queue.enqueue(
+                extract_thumbnail,
+                instance.pk,
+                str(instance.video_file.path),
+                thumb_rel,
+                second=2.0,
+                max_width=480,
+            )
 
 
 @receiver(post_delete, sender=Video)

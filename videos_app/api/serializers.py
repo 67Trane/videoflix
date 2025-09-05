@@ -8,6 +8,7 @@ class VideoSerializer(serializers.ModelSerializer):
     Converts Video instances into JSON and validates incoming data
     when creating or updating videos.
     """
+    video_file = serializers.FileField(required=True)
 
     class Meta:
         model = Video
