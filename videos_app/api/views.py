@@ -28,24 +28,11 @@ class CookieJWTAuthentication(JWTAuthentication):
 
 
 class VideoListView(ListAPIView):
-    """API endpoint that returns a list of all available videos.
-
-    - Accessible only to authenticated users.
-    - Uses JWT for authentication.
-    """
-
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
     authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
-        return Response({
-            "user": str(request.user),
-            "is_authenticated": request.user.is_authenticated,
-            "has_auth_header": bool(request.headers.get("Authorization")),
-            "has_access_cookie": bool(request.COOKIES.get("access_token")),
-        })
 
 class VideoMasterView(APIView):
     """API endpoint that serves the HLS master playlist (index.m3u8).
@@ -59,7 +46,7 @@ class VideoMasterView(APIView):
     """
 
     permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [CookieJWTAuthentication]
 
     def get(self, request, movie_id: int, resolution: str):
         video = get_object_or_404(Video, pk=movie_id)
@@ -90,7 +77,7 @@ class VideoSegmentView(APIView):
         Http404: If the segment name is invalid or the file does not exist.
     """
 
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request, movie_id: int, resolution: str, segment: str):
