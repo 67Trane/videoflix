@@ -4,9 +4,27 @@ from rest_framework.generics import ListAPIView
 from ..models import Video
 from .serializers import VideoSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.http import FileResponse, Http404
 from ..tasks import get_hls_dir
+from rest_framework.response import Response
+
+import logging
+logger = logging.getLogger(__name__)
+
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+class CookieJWTAuthentication(JWTAuthentication):
+    def authenticate(self, request):
+        header = self.get_header(request)
+        if header is not None:
+            return super().authenticate(request)
+
+        raw = request.COOKIES.get("access_token")
+        if not raw:
+            return None
+        token = self.get_validated_token(raw)
+        return self.get_user(token), token
 
 
 class VideoListView(ListAPIView):
@@ -18,9 +36,16 @@ class VideoListView(ListAPIView):
 
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAuthenticated]
 
+    def get(self, request, *args, **kwargs):
+        return Response({
+            "user": str(request.user),
+            "is_authenticated": request.user.is_authenticated,
+            "has_auth_header": bool(request.headers.get("Authorization")),
+            "has_access_cookie": bool(request.COOKIES.get("access_token")),
+        })
 
 class VideoMasterView(APIView):
     """API endpoint that serves the HLS master playlist (index.m3u8).

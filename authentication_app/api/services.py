@@ -46,10 +46,22 @@ def send_activation_email(user, request):
         "If you didn’t sign up for Videoflix, you can safely ignore this email."
     )
     html = f"""
-      <p>Hi,</p>
-      <p>Please confirm your registration by clicking the link below:</p>
-      <p><a href="{activation_url}">{activation_url}</a></p>
-      <p>If you didn’t sign up for Videoflix, you can safely ignore this email.</p>
+    <div style="font-family: Arial, sans-serif; color: #fff; background-color:#0d0d0d; padding:20px; text-align:center;">
+        <h2 style="color:#9147ff; margin-bottom:20px;">Welcome to Videoflix</h2>
+        <p style="color:#ccc;">Please confirm your registration by clicking the button below:</p>
+        <p>
+        <a href="{activation_url}" 
+            style="display:inline-block; padding:14px 28px;
+                    background: linear-gradient(90deg, #9147ff, #4e9fff);
+                    color:#fff; text-decoration:none; border-radius:8px;
+                    font-weight:bold; font-family:Arial, sans-serif;">
+            Activate Account
+        </a>
+        </p>
+        <p style="color:#777; font-size:12px; margin-top:20px;">
+        If you didn’t sign up for Videoflix, you can safely ignore this email.
+        </p>
+    </div>
     """
 
     msg = EmailMultiAlternatives(
@@ -81,7 +93,8 @@ def send_password_reset_email(user, request):
     """
     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
-    path = reverse("password_confirm", kwargs={"uidb64": uidb64, "token": token})
+    path = reverse("password_confirm", kwargs={
+                   "uidb64": uidb64, "token": token})
     reset_url = absolute_url(request, path)
 
     subject = "Reset your Videoflix password"

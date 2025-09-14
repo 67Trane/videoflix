@@ -19,4 +19,5 @@ class VideoSerializer(serializers.ModelSerializer):
             "thumbnail_url",
             "category",
             "created_at",
+            "video_file",
         ]

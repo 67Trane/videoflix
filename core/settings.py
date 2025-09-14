@@ -195,7 +195,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
 }
 
-
+# To send E-mail to Terminal (Dev only)
 # EMAIL_BACKEND = os.getenv(
 #     "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
 # )
