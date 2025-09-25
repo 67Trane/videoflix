@@ -48,7 +48,7 @@ def send_activation_email(user, request):
     html = f"""
     <div style="font-family: Arial, sans-serif; color: #fff; background-color:#0d0d0d; padding:20px; text-align:center;">
         <h2 style="color:#9147ff; margin-bottom:20px;">Welcome to Videoflix</h2>
-        <p style="color:#ccc;">Please confirm your registration by clicking the button below:</p>
+        <p style="color:#ccc;">Dear {user.username}, <br> Please confirm your registration by clicking the button below:</p>
         <p>
         <a href="{activation_url}" 
             style="display:inline-block; padding:14px 28px;
@@ -105,11 +105,23 @@ def send_password_reset_email(user, request):
         "If you didn’t request this, you can safely ignore this email."
     )
     html = f"""
-      <p>Hi,</p>
-      <p>We received a request to reset your password.</p>
-      <p>Click the link below (valid for a limited time):<br>
-         <a href="{reset_url}">{reset_url}</a></p>
-      <p>If you didn’t request this, you can safely ignore this email.</p>
+      <div style="font-family: Arial, sans-serif; color: #fff; background-color:#0d0d0d; padding:20px; text-align:center;">
+    <h2 style="color:#9147ff; margin-bottom:20px;">Reset your Videoflix password</h2>
+    <p style="color:#ccc;">Dear {user.username},<br>
+       We received a request to reset your password.</p>
+    <p>
+        <a href="{reset_url}" 
+           style="display:inline-block; padding:14px 28px;
+                  background: linear-gradient(90deg, #9147ff, #4e9fff);
+                  color:#fff; text-decoration:none; border-radius:8px;
+                  font-weight:bold; font-family:Arial, sans-serif;">
+           Reset Password
+        </a>
+    </p>
+    <p style="color:#777; font-size:12px; margin-top:20px;">
+       If you didn’t request this, you can safely ignore this email.
+    </p>
+</div>
     """
 
     msg = EmailMultiAlternatives(

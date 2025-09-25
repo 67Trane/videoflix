@@ -18,6 +18,7 @@ from .serializers import (
 )
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .services import send_activation_email, send_password_reset_email
+from django.shortcuts import redirect
 
 User = get_user_model()
 
@@ -111,10 +112,7 @@ class ActivateView(APIView):
         if default_token_generator.check_token(user, token):
             user.is_active = True
             user.save(update_fields=["is_active"])
-            return Response(
-                {"detail": "Account activated successfully."},
-                status=status.HTTP_200_OK,
-            )
+            return redirect(f"{settings.FRONTEND_URL}/activate/")
 
         return Response(
             {"detail": "Activation failed or token has expired."},

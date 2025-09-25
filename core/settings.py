@@ -44,6 +44,8 @@ INTERAL_IPS = [
     "127.0.0.1",
 ]
 
+FRONTEND_URL = "http://localhost:4200"
+
 # Application definition
 
 CORS_ALLOWED_ORIGINS = [
