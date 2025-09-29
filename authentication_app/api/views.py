@@ -112,7 +112,7 @@ class ActivateView(APIView):
         if default_token_generator.check_token(user, token):
             user.is_active = True
             user.save(update_fields=["is_active"])
-            return redirect(f"{settings.FRONTEND_URL}/activate/")
+            return Response({"detail": "user is active"})
 
         return Response(
             {"detail": "Activation failed or token has expired."},

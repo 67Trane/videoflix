@@ -36,7 +36,10 @@ def send_activation_email(user, request):
     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
     path = reverse("activate", kwargs={"uidb64": uidb64, "token": token})
-    activation_url = absolute_url(request, path)
+    # activation_url = absolute_url(request, path)
+    frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:4200")
+    activation_url = f"{frontend_url}/pages/auth/activate.html?uid={uidb64}&token={token}"
+    filtered_user_name= user.username.split("@")[0]
 
     subject = "Activate your Videoflix account"
     text = (
@@ -48,7 +51,7 @@ def send_activation_email(user, request):
     html = f"""
     <div style="font-family: Arial, sans-serif; color: #fff; background-color:#0d0d0d; padding:20px; text-align:center;">
         <h2 style="color:#9147ff; margin-bottom:20px;">Welcome to Videoflix</h2>
-        <p style="color:#ccc;">Dear {user.username}, <br> Please confirm your registration by clicking the button below:</p>
+        <p style="color:#ccc;">Dear {filtered_user_name}, <br> Please confirm your registration by clicking the button below:</p>
         <p>
         <a href="{activation_url}" 
             style="display:inline-block; padding:14px 28px;
@@ -96,6 +99,8 @@ def send_password_reset_email(user, request):
     path = reverse("password_confirm", kwargs={
                    "uidb64": uidb64, "token": token})
     reset_url = absolute_url(request, path)
+    filtered_user_name= user.username.split("@")[0]
+    print("asassssssssss")
 
     subject = "Reset your Videoflix password"
     text = (
@@ -107,7 +112,7 @@ def send_password_reset_email(user, request):
     html = f"""
       <div style="font-family: Arial, sans-serif; color: #fff; background-color:#0d0d0d; padding:20px; text-align:center;">
     <h2 style="color:#9147ff; margin-bottom:20px;">Reset your Videoflix password</h2>
-    <p style="color:#ccc;">Dear {user.username},<br>
+    <p style="color:#ccc;">Dear {filtered_user_name},<br>
        We received a request to reset your password.</p>
     <p>
         <a href="{reset_url}" 
