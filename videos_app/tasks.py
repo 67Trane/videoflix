@@ -143,7 +143,6 @@ def get_hls_dir(video: Video, resolution: str) -> Path:
     ]
 
     hls_dir = (
-        Path(settings.MEDIA_ROOT) / "videos" /
-        f"{source_absolute_path.stem}{suffix}"
+        Path(settings.MEDIA_ROOT) / "videos" / f"{source_absolute_path.stem}{suffix}"
     )
     return hls_dir

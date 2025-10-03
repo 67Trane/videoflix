@@ -38,7 +38,9 @@ def send_activation_email(user, request):
     # path = reverse("activate", kwargs={"uidb64": uidb64, "token": token})
     # activation_url = absolute_url(request, path)
     frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:4200")
-    activation_url = f"{frontend_url}/pages/auth/activate.html?uid={uidb64}&token={token}"
+    activation_url = (
+        f"{frontend_url}/pages/auth/activate.html?uid={uidb64}&token={token}"
+    )
     filtered_username = user.username.split("@")[0]
 
     subject = "Activate your Videoflix account"
@@ -150,7 +152,9 @@ def send_password_reset_email(user, request):
     #                "uidb64": uidb64, "token": token})
 
     frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:4200")
-    reset_url = f"{frontend_url}/pages/auth/confirm_password.html?uid={uidb64}&token={token}"
+    reset_url = (
+        f"{frontend_url}/pages/auth/confirm_password.html?uid={uidb64}&token={token}"
+    )
     # reset_url = absolute_url(request, path)
     filtered_username = user.username.split("@")[0]
 

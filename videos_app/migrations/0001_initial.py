@@ -4,23 +4,73 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Video',
+            name="Video",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Timestamp when the video entry was created.', verbose_name='Created at')),
-                ('title', models.CharField(help_text='Title of the video.', max_length=200, verbose_name='Title')),
-                ('description', models.TextField(blank=True, help_text='Optional detailed description of the video.', verbose_name='Description')),
-                ('video_file', models.FileField(help_text="Uploaded video file stored in the 'videos/' directory.", upload_to='videos/', verbose_name='Video File')),
-                ('category', models.CharField(help_text='Category or genre of the video.', max_length=50, verbose_name='Category')),
-                ('thumbnail_url', models.ImageField(blank=True, help_text="Optional thumbnail image stored in the 'thumbnails/' directory.", null=True, upload_to='thumbnails/', verbose_name='Thumbnail')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Timestamp when the video entry was created.",
+                        verbose_name="Created at",
+                    ),
+                ),
+                (
+                    "title",
+                    models.CharField(
+                        help_text="Title of the video.",
+                        max_length=200,
+                        verbose_name="Title",
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(
+                        blank=True,
+                        help_text="Optional detailed description of the video.",
+                        verbose_name="Description",
+                    ),
+                ),
+                (
+                    "video_file",
+                    models.FileField(
+                        help_text="Uploaded video file stored in the 'videos/' directory.",
+                        upload_to="videos/",
+                        verbose_name="Video File",
+                    ),
+                ),
+                (
+                    "category",
+                    models.CharField(
+                        help_text="Category or genre of the video.",
+                        max_length=50,
+                        verbose_name="Category",
+                    ),
+                ),
+                (
+                    "thumbnail_url",
+                    models.ImageField(
+                        blank=True,
+                        help_text="Optional thumbnail image stored in the 'thumbnails/' directory.",
+                        null=True,
+                        upload_to="thumbnails/",
+                        verbose_name="Thumbnail",
+                    ),
+                ),
             ],
         ),
     ]

@@ -10,9 +10,11 @@ from ..tasks import get_hls_dir
 from rest_framework.response import Response
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
+
 
 class CookieJWTAuthentication(JWTAuthentication):
     def authenticate(self, request):
